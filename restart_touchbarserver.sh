@@ -1,5 +1,21 @@
 #!/bin/dash
 
+# オプション解析
+for arg in "$@"
+do
+    case $arg in
+        --version)
+            echo "1.0.0"
+            exit 0
+            ;;
+        *)
+            # 未知のオプションに対する処理
+            echo "Error: Unknown option $arg" >&2
+            exit 201
+            ;;
+    esac
+done
+
 # TouchBarServerプロセスのプロセスIDを取得
 pid=$(pgrep TouchBarServer)
 
