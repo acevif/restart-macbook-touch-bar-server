@@ -16,6 +16,13 @@ do
     esac
 done
 
+# ルート権限を持っていなければエラー
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Error: This script must be run as root" >&2
+    logger "Error: This script must be run as root"
+    exit 103
+fi
+
 # TouchBarServerプロセスのプロセスIDを取得
 pid=$(pgrep TouchBarServer)
 
@@ -29,7 +36,7 @@ fi
 # プロセスが存在する場合、強制終了
 echo "Killing TouchBarServer with PID $pid"
 logger "Killing TouchBarServer with PID $pid"
-kill -SIGTERM $pid
+kill -TERM $pid
 
 # killコマンドの結果をチェック
 if [ $? -ne 0 ]; then
