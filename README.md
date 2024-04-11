@@ -25,5 +25,8 @@ WIP
 
 ## Diagnostics
 
-- Logs will be saved to `/var/log/restart_touchbarserver.log`.
-
+- To view the logs, use the following command:
+  ```
+  log show --last 7d --predicate "process == 'logger'"
+  ```
+- Alternatively, you can check `/var/log/restart_touchbarserver.log` to see the results of the periodic execution by launchd.
