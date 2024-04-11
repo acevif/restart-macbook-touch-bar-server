@@ -10,7 +10,7 @@ do
             ;;
         *)
             # 未知のオプションに対する処理
-            echo "Error: Unknown option $arg" >&2
+            logger -s "Error: Unknown option $arg"
             exit 201
             ;;
     esac
@@ -18,8 +18,7 @@ done
 
 # ルート権限を持っていなければエラー
 if [ "$(id -u)" -ne 0 ]; then
-    echo "Error: This script must be run as root" >&2
-    logger "Error: This script must be run as root"
+    logger -s "Error: This script must be run as root"
     exit 103
 fi
 
@@ -28,8 +27,7 @@ pid=$(pgrep TouchBarServer)
 
 # TouchBarServerが見つからない場合
 if [ -z "$pid" ]; then
-    echo "TouchBarServer not found." >&2
-    logger "TouchBarServer not found."
+    logger -s "TouchBarServer not found."
     exit 101
 fi
 
@@ -40,8 +38,7 @@ kill -TERM $pid
 
 # killコマンドの結果をチェック
 if [ $? -ne 0 ]; then
-    echo "Failed to kill TouchBarServer." >&2
-    logger "Failed to kill TouchBarServer."
+    logger -s "Failed to kill TouchBarServer."
     exit 102
 fi
 
