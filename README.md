@@ -27,6 +27,6 @@ WIP
 
 - To view the logs, use the following command:
   ```
-  log show --last 7d --predicate "process == 'logger'"
+  log show --last 7d --predicate "process == 'logger' AND composedMessage CONTAINS '[Restart Macbook TouchBarServer]'"
   ```
 - Alternatively, you can check `/var/log/restart_touchbarserver.log` to see the results of the periodic execution by launchd.

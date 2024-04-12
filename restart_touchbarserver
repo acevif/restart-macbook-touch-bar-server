@@ -1,5 +1,7 @@
 #!/bin/dash
 
+LOG_TAG="[Restart Macbook TouchBarServer]"
+
 # オプション解析
 for arg in "$@"
 do
@@ -10,7 +12,7 @@ do
             ;;
         *)
             # 未知のオプションに対する処理
-            logger -s "Error: Unknown option $arg"
+            logger -s "$LOG_TAG Error: Unknown option $arg"
             exit 201
             ;;
     esac
@@ -18,7 +20,7 @@ done
 
 # ルート権限を持っていなければエラー
 if [ "$(id -u)" -ne 0 ]; then
-    logger -s "Error: This script must be run as root"
+    logger -s "$LOG_TAG Error: This script must be run as root"
     exit 103
 fi
 
@@ -27,20 +29,20 @@ pid=$(pgrep TouchBarServer)
 
 # TouchBarServerが見つからない場合
 if [ -z "$pid" ]; then
-    logger -s "TouchBarServer not found."
+    logger -s "$LOG_TAG TouchBarServer not found."
     exit 101
 fi
 
 # プロセスが存在する場合、強制終了
-echo "Killing TouchBarServer with PID $pid"
-logger "Killing TouchBarServer with PID $pid"
+echo "$LOG_TAG Killing TouchBarServer with PID $pid"
+logger "$LOG_TAG Killing TouchBarServer with PID $pid"
 kill -TERM $pid
 
 # killコマンドの結果をチェック
 if [ $? -ne 0 ]; then
-    logger -s "Failed to kill TouchBarServer."
+    logger -s "$LOG_TAG Failed to kill TouchBarServer."
     exit 102
 fi
 
-echo "Successfully killed TouchBarServer."
-logger "Successfully killed TouchBarServer."
+echo "$LOG_TAG Successfully killed TouchBarServer."
+logger "$LOG_TAG Successfully killed TouchBarServer."
