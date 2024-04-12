@@ -25,24 +25,35 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # TouchBarServerプロセスのプロセスIDを取得
-pid=$(pgrep TouchBarServer)
+old_pid=$(pgrep TouchBarServer)
 
 # TouchBarServerが見つからない場合
-if [ -z "$pid" ]; then
+if [ -z "$old_pid" ]; then
     logger -s "$LOG_TAG TouchBarServer not found."
     exit 101
 fi
 
 # プロセスが存在する場合、強制終了
-echo "$LOG_TAG Killing TouchBarServer with PID $pid"
-logger "$LOG_TAG Killing TouchBarServer with PID $pid"
-kill -TERM $pid
+echo "$LOG_TAG Restarting TouchBarServer(old PID=$old_pid)"
+logger "$LOG_TAG Restarting TouchBarServer(old PID=$old_pid)"
+kill -TERM $old_pid
 
 # killコマンドの結果をチェック
 if [ $? -ne 0 ]; then
-    logger -s "$LOG_TAG Failed to kill TouchBarServer."
+    logger -s "$LOG_TAG Failed to restart TouchBarServer. (kill failed)"
     exit 102
 fi
 
-echo "$LOG_TAG Successfully killed TouchBarServer."
-logger "$LOG_TAG Successfully killed TouchBarServer."
+# 再起動を確認
+sleep 5 # プロセスが終了し、新たに起動する時間を待つ
+new_pid=$(pgrep TouchBarServer)
+if [ -z "$new_pid" ]; then
+    logger -s "$LOG_TAG Failed to restart TouchBarServer. (no new process found)"
+    exit 103
+elif [ "$new_pid" -eq "$old_pid" ]; then
+    logger -s "$LOG_TAG Failed to restart TouchBarServer. (old process still running)"
+    exit 104
+fi
+
+echo "$LOG_TAG Successfully restarted TouchBarServer. (old PID=$old_pid, new PID=$new_pid)"
+logger "$LOG_TAG Successfully restarted TouchBarServer. (old PID=$old_pid, new PID=$new_pid)"
