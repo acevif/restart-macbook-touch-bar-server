@@ -2,7 +2,7 @@
 
 LOG_TAG="[Restart Macbook TouchBarServer]"
 
-# オプション解析
+# Option parsing
 for arg in "$@"
 do
     case $arg in
@@ -11,41 +11,41 @@ do
             exit 0
             ;;
         *)
-            # 未知のオプションに対する処理
+            # Handling for unknown options
             logger -s "$LOG_TAG Error: Unknown option $arg"
             exit 201
             ;;
     esac
 done
 
-# ルート権限を持っていなければエラー
+# Error if not running with root privileges
 if [ "$(id -u)" -ne 0 ]; then
     logger -s "$LOG_TAG Error: This script must be run as root"
     exit 103
 fi
 
-# TouchBarServerプロセスのプロセスIDを取得
+# Get the process ID of the TouchBarServer process
 old_pid=$(pgrep TouchBarServer)
 
-# TouchBarServerが見つからない場合
+# If TouchBarServer is not found
 if [ -z "$old_pid" ]; then
     logger -s "$LOG_TAG TouchBarServer not found."
     exit 101
 fi
 
-# プロセスが存在する場合、強制終了
+# Force termination if the process exists
 echo "$LOG_TAG Restarting TouchBarServer(old PID=$old_pid)"
 logger "$LOG_TAG Restarting TouchBarServer(old PID=$old_pid)"
 kill -TERM $old_pid
 
-# killコマンドの結果をチェック
+# Check the result of the kill command
 if [ $? -ne 0 ]; then
     logger -s "$LOG_TAG Failed to restart TouchBarServer. (kill failed)"
     exit 102
 fi
 
-# 再起動を確認
-sleep 5 # プロセスが終了し、新たに起動する時間を待つ
+# Confirm restart
+sleep 5 # Wait for the process to terminate and start anew
 new_pid=$(pgrep TouchBarServer)
 if [ -z "$new_pid" ]; then
     logger -s "$LOG_TAG Failed to restart TouchBarServer. (no new process found)"
